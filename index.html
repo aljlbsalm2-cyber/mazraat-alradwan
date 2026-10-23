@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b90012">
+<title>مزرعة الرضوان</title>
+<style>
+:root{--red:#c90016;--dark:#242424;--bg:#f5f6f8;--white:#fff;--green:#16834a;--muted:#68717d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:#222}
+header{background:linear-gradient(135deg,#b90012,#e52632);color:#fff;padding:18px 16px 22px;border-radius:0 0 24px 24px}
+.brand{display:flex;align-items:center;gap:12px}.brand img{width:74px;height:64px;object-fit:contain;background:#fff;border-radius:12px;padding:3px}.brand h1{font-size:23px;margin:0 0 5px}.brand p{margin:0;font-size:13px;opacity:.95}
+main{padding:14px;max-width:900px;margin:auto}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:-4px}
+.stat,.panel,.tile{background:#fff;border-radius:15px;padding:14px;box-shadow:0 2px 9px #0000000b}.stat small{color:var(--muted)}.stat strong{display:block;font-size:23px;margin-top:7px;color:var(--red)}
+h2{font-size:19px;margin:20px 2px 10px}.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.tile{border:0;text-align:right;min-height:100px;cursor:pointer;color:#222}.tile span{font-size:27px;display:block;margin-bottom:8px}.tile b{font-size:16px}.tile small{display:block;color:var(--muted);margin-top:5px}
+nav{display:flex;gap:7px;overflow:auto;padding:4px 0 10px}.navbtn{border:0;border-radius:10px;padding:10px 12px;background:#eee;white-space:nowrap;font-weight:bold}.navbtn.active{background:var(--red);color:#fff}
+.view{display:none}.view.active{display:block}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-size:13px;color:#4b5563}input,select,textarea{width:100%;padding:11px;border:1px solid #d8dce2;border-radius:10px;background:white;font:inherit;font-size:14px}button{font:inherit}.primary,.secondary,.danger{border:0;border-radius:10px;padding:11px 14px;font-weight:bold;cursor:pointer}.primary{background:var(--red);color:white}.secondary{background:#eee;color:#222}.danger{background:#ffebed;color:#b90012}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.list{margin-top:14px}.record{background:#fff;border-radius:12px;padding:12px;margin:8px 0;border:1px solid #eee}.recordhead{display:flex;justify-content:space-between;gap:10px;font-weight:bold}.muted{color:var(--muted);font-size:13px;margin-top:6px}.notice{background:#fff8e1;border:1px solid #ffe4a3;border-radius:12px;padding:12px;font-size:13px;line-height:1.7;margin-top:12px}.money{font-weight:bold;color:var(--green)}.empty{color:var(--muted);text-align:center;padding:22px}
+footer{text-align:center;padding:24px 12px;color:#7b818a;font-size:12px}
+@media(max-width:420px){.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.brand h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><img src="logo.png" alt="شعار مزرعة الرضوان"><div><h1>مزرعة الرضوان</h1><p>إدارة مزرعة الدجاج اللاحم — يعمل دون إنترنت</p></div></div>
+</header>
+<main>
+<section id="home" class="view active">
+ <h2>ملخص المزرعة</h2>
+ <div class="stats">
+  <div class="stat"><small>عدد الصيصان الأصلي</small><strong id="sOriginal">0</strong></div>
+  <div class="stat"><small>الدجاج المتبقي تقديريًا</small><strong id="sRemaining">0</strong></div>
+  <div class="stat"><small>إجمالي المبيعات</small><strong id="sSales">0</strong><small>ريال</small></div>
+  <div class="stat"><small>صافي النتيجة الحالية</small><strong id="sProfit">0</strong><small>ريال — تقديري</small></div>
+ </div>
+ <h2>الأقسام الرئيسية</h2>
+ <div class="tiles">
+  <button class="tile" onclick="show('chicks')"><span>🐣</span><b>الصيصان</b><small>الشراء والوفيات والأوزان</small></button>
+  <button class="tile" onclick="show('sales')"><span>💰</span><b>المبيعات</b><small>بيع بالوزن أو بالعدد</small></button>
+  <button class="tile" onclick="show('feed')"><span>🌾</span><b>الأعلاف</b><small>الشراء والصرف والمخزون</small></button>
+  <button class="tile" onclick="show('expenses')"><span>📊</span><b>المصروفات والأرباح</b><small>التكاليف والتقارير</small></button>
+ </div>
+ <div class="notice">البيانات محفوظة على هذا الجهاز فقط. استخدم «نسخة احتياطية» بانتظام حتى لا تفقد بياناتك عند تغيير الهاتف أو حذف بيانات المتصفح.</div>
+</section>
+
+<section id="chicks" class="view">
+ <nav><button class="navbtn active" onclick="subtab(this,'chickbuy')">شراء الصيصان</button><button class="navbtn" onclick="subtab(this,'deaths')">الوفيات</button><button class="navbtn" onclick="subtab(this,'weights')">الأوزان</button></nav>
+ <div id="chickbuy" class="subview">
+  <div class="panel"><h2>تسجيل شراء الصيصان</h2><form id="buyForm"><div class="formgrid">
+   <div class="field"><label>تاريخ الشراء</label><input type="date" name="date" required></div>
+   <div class="field"><label>عدد الصيصان</label><input type="number" name="qty" min="1" required></div>
+   <div class="field"><label>سعر الصوص الواحد (ريال)</label><input type="number" name="price" min="0" step="any" required></div>
+   <div class="field"><label>اسم المورد</label><input name="supplier"></div>
+   <div class="field full"><label>ملاحظات</label><input name="notes"></div>
+  </div><div class="actions"><button class="primary">حفظ الشراء</button></div></form></div>
+  <div id="buyList" class="list"></div>
+ </div>
+ <div id="deaths" class="subview" style="display:none">
+  <div class="panel"><h2>تسجيل الوفيات اليومية</h2><form id="deathForm"><div class="formgrid">
+   <div class="field"><label>التاريخ</label><input type="date" name="date" required></div>
+   <div class="field"><label>عدد الوفيات</label><input type="number" name="qty" min="1" required></div>
+   <div class="field full"><label>سبب/ملاحظات</label><input name="notes" placeholder="اختياري"></div>
+  </div><div class="actions"><button class="primary">حفظ الوفيات</button></div></form></div><div id="deathList" class="list"></div>
+ </div>
+ <div id="weights" class="subview" style="display:none">
+  <div class="panel"><h2>تسجيل الأوزان</h2><form id="weightForm"><div class="formgrid">
+   <div class="field"><label>التاريخ</label><input type="date" name="date" required></div>
+   <div class="field"><label>عدد الطيور في العينة</label><input type="number" name="qty" min="1" required></div>
+   <div class="field"><label>متوسط الوزن (كجم)</label><input type="number" name="weight" min="0" step="any" required></div>
+   <div class="field"><label>ملاحظات</label><input name="notes"></div>
+  </div><div class="actions"><button class="primary">حفظ الوزن</button></div></form></div><div id="weightList" class="list"></div>
+ </div>
+</section>
+
+<section id="sales" class="view">
+ <div class="panel"><h2>تسجيل عملية بيع</h2><form id="salesForm"><div class="formgrid">
+  <div class="field"><label>تاريخ البيع</label><input type="date" name="date" required></div>
+  <div class="field"><label>طريقة البيع</label><select name="method"><option value="بالوزن">بالوزن</option><option value="بالعدد">بالعدد</option></select></div>
+  <div class="field"><label>عدد الدجاج المباع</label><input type="number" name="qty" min="0" value="0" required></div>
+  <div class="field"><label>الوزن الإجمالي (كجم)</label><input type="number" name="weight" min="0" step="any" value="0"></div>
+  <div class="field"><label>سعر الكيلو/الحبة (ريال)</label><input type="number" name="price" min="0" step="any" required></div>
+  <div class="field"><label>المبلغ المستلم (ريال)</label><input type="number" name="paid" min="0" step="any" required></div>
+  <div class="field"><label>اسم المشتري</label><input name="buyer"></div>
+  <div class="field"><label>ملاحظات</label><input name="notes"></div>
+ </div><div class="actions"><button class="primary">حفظ البيع</button></div></form><div class="muted">يُحسب إجمالي البيع حسب طريقة البيع المختارة: الوزن × السعر أو العدد × السعر.</div></div>
+ <div id="salesList" class="list"></div>
+</section>
+
+<section id="feed" class="view">
+ <nav><button class="navbtn active" onclick="subtab(this,'feedbuy')">شراء الأعلاف</button><button class="navbtn" onclick="subtab(this,'feeduse')">صرف العلف</button></nav>
+ <div id="feedbuy" class="subview"><div class="panel"><h2>تسجيل شراء أعلاف</h2><form id="feedBuyForm"><div class="formgrid">
+  <div class="field"><label>التاريخ</label><input type="date" name="date" required></div>
+  <div class="field"><label>نوع العلف</label><select name="type"><option>بادئ</option><option>نامي</option><option>ناهي</option><option>أخرى</option></select></div>
+  <div class="field"><label>عدد الأكياس</label><input type="number" name="bags" min="1" required></div>
+  <div class="field"><label>وزن الكيس (كجم)</label><input type="number" name="bagWeight" min="0" step="any" value="50" required></div>
+  <div class="field"><label>سعر الكيس (ريال)</label><input type="number" name="price" min="0" step="any" required></div>
+  <div class="field"><label>المورد</label><input name="supplier"></div>
+ </div><div class="actions"><button class="primary">حفظ شراء العلف</button></div></form></div><div id="feedBuyList" class="list"></div></div>
+ <div id="feeduse" class="subview" style="display:none"><div class="panel"><h2>تسجيل استهلاك العلف</h2><form id="feedUseForm"><div class="formgrid">
+  <div class="field"><label>التاريخ</label><input type="date" name="date" required></div>
+  <div class="field"><label>نوع العلف</label><select name="type"><option>بادئ</option><option>نامي</option><option>ناهي</option><option>أخرى</option></select></div>
+  <div class="field"><label>الكمية المستهلكة (كجم)</label><input type="number" name="qty" min="0.1" step="any" required></div>
+  <div class="field"><label>ملاحظات</label><input name="notes"></div>
+ </div><div class="actions"><button class="primary">حفظ الاستهلاك</button></div></form></div><div id="feedUseList" class="list"></div></div>
+ <div class="panel" style="margin-top:12px"><h2>ملخص مخزون الأعلاف</h2><div id="feedStock"></div></div>
+</section>
+
+<section id="expenses" class="view">
+ <div class="panel"><h2>تسجيل مصروف أو إيراد آخر</h2><form id="expenseForm"><div class="formgrid">
+  <div class="field"><label>التاريخ</label><input type="date" name="date" required></div>
+  <div class="field"><label>النوع</label><select name="kind"><option value="مصروف">مصروف</option><option value="إيراد">إيراد</option></select></div>
+  <div class="field"><label>التصنيف</label><select name="category"><option>أدوية وتحصينات</option><option>عمال</option><option>كهرباء</option><option>مياه</option><option>نقل</option><option>صيانة</option><option>إيجار</option><option>إيراد آخر</option><option>أخرى</option></select></div>
+  <div class="field"><label>المبلغ (ريال)</label><input type="number" name="amount" min="0" step="any" required></div>
+  <div class="field full"><label>البيان</label><input name="notes" placeholder="تفاصيل المصروف أو الإيراد"></div>
+ </div><div class="actions"><button class="primary">حفظ</button></div></form></div>
+ <div class="stats" style="margin-top:12px"><div class="stat"><small>تكلفة الصيصان</small><strong id="cChicks">0</strong></div><div class="stat"><small>تكلفة الأعلاف المشتراة</small><strong id="cFeed">0</strong></div><div class="stat"><small>مصروفات أخرى</small><strong id="cOther">0</strong></div><div class="stat"><small>صافي النتيجة التقديرية</small><strong id="cProfit">0</strong></div></div>
+ <div class="actions"><button class="secondary" onclick="exportCSV()">تصدير التقارير إلى Excel (CSV)</button><button class="secondary" onclick="backup()">إنشاء نسخة احتياطية</button><button class="secondary" onclick="document.getElementById('restoreFile').click()">استعادة نسخة احتياطية</button><input id="restoreFile" type="file" accept=".json,application/json" hidden></div>
+ <div id="expenseList" class="list"></div>
+ <div class="notice">الحساب التقديري = المبيعات المسجلة + الإيرادات الأخرى − تكلفة الصيصان − مشتريات الأعلاف − المصروفات الأخرى. قد لا يعكس الربح النهائي إذا كانت هناك تكاليف أو مبيعات لم تُسجّل.</div>
+</section>
+
+<section id="support" class="view">
+ <div class="panel" style="text-align:center;padding:24px"><img src="logo.png" style="width:120px;height:80px;object-fit:contain" alt="الشعار"><h2>مزرعة الرضوان</h2><p>إدارة مزارع الدجاج اللاحم</p><hr style="border:0;border-top:1px solid #eee"><h3>تواصل مع الدعم الفني</h3><p><b>اسم المطوّر:</b> salem</p><p><b>رقم الجوال:</b> 730077193</p><div class="actions" style="justify-content:center"><a href="tel:730077193"><button class="primary">📞 الاتصال بالمطوّر</button></a><a href="https://wa.me/967730077193" target="_blank" rel="noopener"><button class="secondary">💬 واتساب</button></a></div><p class="muted">الاتصال وواتساب يحتاجان إلى شبكة اتصال.</p></div>
+</section>
+<footer>مزرعة الرضوان · المطوّر: salem · نسخة أولية محلية</footer>
+</main>
+<script>
+const KEY='radwan_farm_v1';
+const empty={buys:[],deaths:[],weights:[],sales:[],feedBuys:[],feedUses:[],expenses:[]};
+let db=load();
+function load(){try{return {...structuredClone(empty),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return JSON.parse(JSON.stringify(empty))}}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function num(v){return Number(v)||0}
+function fmt(v){return Math.round(num(v)*100)/100 .toLocaleString('en-US')}
+function today(){return new Date().toISOString().slice(0,10)}
+document.querySelectorAll('input[type=date]').forEach(x=>x.value=today());
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);render()}
+function subtab(btn,id){let parent=btn.closest('.view');parent.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');parent.querySelectorAll('.subview').forEach(s=>s.style.display='none');document.getElementById(id).style.display='block'}
+function formData(form){return Object.fromEntries(new FormData(form).entries())}
+function addForm(id,key,transform){document.getElementById(id).addEventListener('submit',e=>{e.preventDefault();let d=formData(e.target);d=transform?transform(d):d;d.id=Date.now()+Math.random();db[key].push(d);e.target.reset();e.target.querySelectorAll('input[type=date]').forEach(x=>x.value=today());save();alert('تم الحفظ بنجاح')})}
+addForm('buyForm','buys',d=>({...d,qty:num(d.qty),price:num(d.price),total:num(d.qty)*num(d.price)}));
+addForm('deathForm','deaths',d=>({...d,qty:num(d.qty)}));
+addForm('weightForm','weights',d=>({...d,qty:num(d.qty),weight:num(d.weight)}));
+addForm('salesForm','sales',d=>{d.qty=num(d.qty);d.weight=num(d.weight);d.price=num(d.price);d.paid=num(d.paid);d.total=(d.method==='بالوزن'?d.weight:d.qty)*d.price;d.remaining=Math.max(0,d.total-d.paid);return d});
+addForm('feedBuyForm','feedBuys',d=>({...d,bags:num(d.bags),bagWeight:num(d.bagWeight),price:num(d.price),total:num(d.bags)*num(d.price),kg:num(d.bags)*num(d.bagWeight)}));
+addForm('feedUseForm','feedUses',d=>({...d,qty:num(d.qty)}));
+addForm('expenseForm','expenses',d=>({...d,amount:num(d.amount)}));
+function money(v){return num(v).toLocaleString('en-US',{maximumFractionDigits:2})}
+function records(id,arr,make){let el=document.getElementById(id);if(!arr.length){el.innerHTML='<div class="empty">لا توجد سجلات حتى الآن</div>';return}el.innerHTML=arr.slice().reverse().map(x=>`<div class="record"><div class="recordhead"><span>${make(x)}</span><button class="danger" onclick="delRecord('${id}',${x.id})">حذف</button></div><div class="muted">${x.date||''}${x.notes?' — '+escapeHtml(x.notes):''}</div></div>`).join('')}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function delRecord(list,id){let map={buyList:'buys',deathList:'deaths',weightList:'weights',salesList:'sales',feedBuyList:'feedBuys',feedUseList:'feedUses',expenseList:'expenses'};let key=map[list];if(key&&confirm('هل تريد حذف هذا السجل؟')){db[key]=db[key].filter(x=>String(x.id)!==String(id));save()}}
+function sum(arr,key){return arr.reduce((a,x)=>a+num(x[key]),0)}
+function render(){
+ let orig=sum(db.buys,'qty'),dead=sum(db.deaths,'qty'),sold=sum(db.sales,'qty'),sales=sum(db.sales,'total'),chickCost=sum(db.buys,'total'),feedCost=sum(db.feedBuys,'total'),otherCost=sum(db.expenses.filter(x=>x.kind==='مصروف'),'amount'),otherIncome=sum(db.expenses.filter(x=>x.kind==='إيراد'),'amount'),profit=sales+otherIncome-chickCost-feedCost-otherCost;
+ document.getElementById('sOriginal').textContent=money(orig);document.getElementById('sRemaining').textContent=money(Math.max(0,orig-dead-sold));document.getElementById('sSales').textContent=money(sales);document.getElementById('sProfit').textContent=money(profit);
+ document.getElementById('cChicks').textContent=money(chickCost);document.getElementById('cFeed').textContent=money(feedCost);document.getElementById('cOther').textContent=money(otherCost);document.getElementById('cProfit').textContent=money(profit);
+ records('buyList',db.buys,x=>`شراء ${money(x.qty)} صوص — ${money(x.total)} ريال`);
+ records('deathList',db.deaths,x=>`وفيات: ${money(x.qty)} طائر`);
+ records('weightList',db.weights,x=>`عينة ${money(x.qty)} طائر — متوسط الوزن ${money(x.weight)} كجم`);
+ records('salesList',db.sales,x=>`بيع ${x.method==='بالوزن'?money(x.weight)+' كجم':money(x.qty)+' طائر'} — الإجمالي ${money(x.total)} ريال — المتبقي ${money(x.remaining)} ريال`);
+ records('feedBuyList',db.feedBuys,x=>`علف ${x.type}: ${money(x.bags)} كيس (${money(x.kg)} كجم) — ${money(x.total)} ريال`);
+ records('feedUseList',db.feedUses,x=>`صرف ${x.type}: ${money(x.qty)} كجم`);
+ records('expenseList',db.expenses,x=>`${x.kind} — ${x.category}: ${money(x.amount)} ريال`);
+ let types=[...new Set([...db.feedBuys.map(x=>x.type),...db.feedUses.map(x=>x.type)])];document.getElementById('feedStock').innerHTML=types.length?types.map(t=>{let bought=db.feedBuys.filter(x=>x.type===t).reduce((a,x)=>a+num(x.kg),0),used=db.feedUses.filter(x=>x.type===t).reduce((a,x)=>a+num(x.qty),0);return `<div class="record"><b>${escapeHtml(t)}</b><div class="muted">المشتَرى: ${money(bought)} كجم — المستهلك: ${money(used)} كجم — المتبقي: <b>${money(bought-used)} كجم</b></div></div>`}).join(''):'<div class="empty">لا توجد بيانات أعلاف بعد</div>';
+}
+function download(name,content,type){let blob=new Blob([content],{type});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+function backup(){download('backup_mazraat_alradwan_'+today()+'.json',JSON.stringify(db,null,2),'application/json');}
+document.getElementById('restoreFile').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!confirm('ستُستبدل البيانات الحالية بمحتويات النسخة الاحتياطية. هل تريد المتابعة؟'))return;db={...JSON.parse(JSON.stringify(empty)),...x};save();alert('تمت استعادة النسخة الاحتياطية')}catch(err){alert('الملف غير صالح')}e.target.value=''});
+function exportCSV(){let rows=[['القسم','التاريخ','البيان','العدد','الكمية كجم','المبلغ ريال','تفاصيل']];
+db.buys.forEach(x=>rows.push(['الصيصان',x.date,'شراء صيصان',x.qty,'',x.total,x.supplier||'']));
+db.deaths.forEach(x=>rows.push(['الوفيات',x.date,'وفيات',x.qty,'','',x.notes||'']));
+db.weights.forEach(x=>rows.push(['الأوزان',x.date,'عينة',x.qty,x.weight,'',x.notes||'']));
+db.sales.forEach(x=>rows.push(['المبيعات',x.date,'بيع '+x.method,x.qty,x.weight,x.total,`المستلم ${x.paid}، المتبقي ${x.remaining}، المشتري ${x.buyer||''}`]));
+db.feedBuys.forEach(x=>rows.push(['الأعلاف',x.date,'شراء '+x.type,x.bags,x.kg,x.total,x.supplier||'']));
+db.feedUses.forEach(x=>rows.push(['الأعلاف',x.date,'استهلاك '+x.type,'',x.qty,'',x.notes||'']));
+db.expenses.forEach(x=>rows.push(['الحسابات',x.date,x.kind+' '+x.category,'','',x.amount,x.notes||'']));
+let csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');download('report_mazraat_alradwan_'+today()+'.csv',csv,'text/csv;charset=utf-8');}
+render();
+</script>
+</body></html>
