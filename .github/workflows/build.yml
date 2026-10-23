@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android APK from Zip
 
 on:
   push:
@@ -17,14 +17,18 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Build with Gradle
-      uses: eskatos/gradle-command-action@v3
-      with:
-        arguments: assembleDebug
+    - name: Unzip Project
+      run: |
+        unzip -o project.zip -d extracted_project || unzip -o *.zip -d extracted_project
+
+    - name: Build Debug APK
+      run: |
+        cd extracted_project/* 2>/dev/null || cd extracted_project
+        gradle assembleDebug || ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
-        path: build/outputs/apk/debug/*.apk
+        path: "**/build/outputs/apk/debug/*.apk"
         
